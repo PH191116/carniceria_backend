@@ -1,9 +1,6 @@
 package com.example.carniceria.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +18,16 @@ public class Producto {
     private String nombre;
     private double precio;
     @OneToOne
-    private Categoria categoria;
+    @JoinColumn(name="id_categoria")
+    private Categoria id_categoria;
 
+    @Override
+    public String toString() {
+        return "Producto{" +
+                "id_producto='" + id_producto + '\'' +
+                ", nombre='" + nombre + '\'' +
+                ", precio=" + precio +
+                ", categoria=" + id_categoria +
+                '}';
+    }
 }

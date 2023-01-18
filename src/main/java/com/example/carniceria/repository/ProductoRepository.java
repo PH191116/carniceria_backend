@@ -4,5 +4,4 @@ import com.example.carniceria.model.Producto;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProductoRepository extends JpaRepository<Producto, String> {
-    boolean existsProductoById_producto(String id);
 }

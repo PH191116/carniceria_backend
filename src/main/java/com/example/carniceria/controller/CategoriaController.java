@@ -6,6 +6,7 @@ import com.example.carniceria.repository.CategoriaRepository;
 import com.example.carniceria.service.ICategoriaService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,18 +23,20 @@ public class CategoriaController {
     @Autowired
     ICategoriaService categoriaService;
     @GetMapping("")
-    public List<Categoria> getCategorias(){
-            if (!categoriaService.findAllCategorias().isEmpty())
-                return categoriaService.findAllCategorias();
+    public ResponseEntity<Object> getCategorias(){
+        List<Categoria> categorias = categoriaService.findAllCategorias();
+        log.info("categorias: "+categorias);
+            if (!categorias.isEmpty())
+                return ResponseEntity.ok(categorias);
             else
-                return Arrays.asList();
+                return ResponseEntity.notFound().build();
     }
     @GetMapping("/{id}")
-    public Categoria getCategoriasById(@PathVariable("id") Integer id){
+    public ResponseEntity getCategoriaById(@PathVariable("id") Integer id){
         Optional<Categoria> categoria = categoriaService.findCategoriaById(id);
         if (categoria.isPresent())
-            return categoria.get();
+            return ResponseEntity.ok(categoria.get());
         else
-            return null;
+            return ResponseEntity.notFound().build();
     }
 }

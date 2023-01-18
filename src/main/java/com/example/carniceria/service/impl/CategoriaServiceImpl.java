@@ -1,7 +1,8 @@
-package com.example.carniceria.service;
+package com.example.carniceria.service.impl;
 
 import com.example.carniceria.model.Categoria;
 import com.example.carniceria.repository.CategoriaRepository;
+import com.example.carniceria.service.ICategoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class CategoriaServiceImpl implements ICategoriaService{
+public class CategoriaServiceImpl implements ICategoriaService {
     @Autowired
     CategoriaRepository categoriaRepository;
     @Override
@@ -24,7 +25,7 @@ public class CategoriaServiceImpl implements ICategoriaService{
     @Override
     public List<Categoria> findAllCategorias() {
         if(!categoriaRepository.findAll().isEmpty())
-            categoriaRepository.findAll();
+           return categoriaRepository.findAll();
         return Arrays.asList();
     }
 
