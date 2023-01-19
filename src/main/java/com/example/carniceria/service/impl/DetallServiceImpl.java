@@ -1,6 +1,8 @@
 package com.example.carniceria.service.impl;
 
+import com.example.carniceria.model.Compra;
 import com.example.carniceria.model.Detalle;
+import com.example.carniceria.model.Producto;
 import com.example.carniceria.repository.DetalleRepository;
 import com.example.carniceria.service.IDetalleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +31,13 @@ public class DetallServiceImpl implements IDetalleService {
     }
 
     @Override
-    public List<Detalle> findDetalleByCompra(Integer id) {
-        return null;
+    public List<Detalle> findDetalleByCompra(Compra compra) {
+        return detalleRepository.findDetalleByCompra(compra);
     }
+
+    @Override
+    public List<Detalle> findDetalleByProducto(Producto producto) {
+        return detalleRepository.findDetalleByProducto(producto);
+    }
+
 }

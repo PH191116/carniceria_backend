@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.util.List;
 
 @Entity
 @Table(name = "detalle_compra")
@@ -24,6 +25,17 @@ public class Detalle {
     Producto producto;
     private int cantidad;
     private double precio;
+
+    public double calcularCompra(List<Detalle> detalleList){
+        double total=0.00, precio = 0.00;
+        int cantidad;
+        for (Detalle detalle:detalleList) {
+            cantidad = detalle.getCantidad();
+            precio = detalle.getPrecio();
+            total += (cantidad*precio);
+        }
+        return total;
+    }
     @Override
     public String toString() {
         return "Detalle{" +
