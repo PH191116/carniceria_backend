@@ -1,6 +1,8 @@
 package com.example.carniceria.controller;
 
+import com.example.carniceria.Dto.DetalleCompraProductos;
 import com.example.carniceria.Dto.DetalleCompras;
+import com.example.carniceria.Dto.DetalleList;
 import com.example.carniceria.Dto.DetalleProductos;
 import com.example.carniceria.model.Compra;
 import com.example.carniceria.model.Detalle;
@@ -29,13 +31,28 @@ public class DetalleController {
     ICompraService compraService;
     @Autowired
     IProductoService productoService;
+    List<Detalle> detalleList= new ArrayList<>();
     @GetMapping("")
     public ResponseEntity<Object> getDetalle(){
         List<Detalle> detalle = detalleService.findAllDetalle();
+        DetalleCompraProductos detalleCompraProducto = new DetalleCompraProductos();
+        DetalleList detalleList = new DetalleList();
+        List<Compra> compras = new ArrayList<>();
+        List<Producto> productos = new ArrayList<>();
+        List<DetalleCompraProductos> detalleCompraProductos = new ArrayList<>();
         log.info("detalle: "+detalle);
-        if (!detalle.isEmpty())
-            return ResponseEntity.ok(detalle);
-        else
+        if (!detalle.isEmpty()) {
+            for (Detalle detalle1 : detalle) {
+                Optional<Compra> compra = compraService.findCompraById(detalle1.getCompra().getId_compra());
+                detalleCompraProducto.setCompra(compra.get());
+                productos.add(detalle1.getProducto());
+                detalleCompraProducto.setProductos(productos);
+                detalleCompraProducto.setTotal(detalle1.getTotal());
+                detalleCompraProductos.add(detalleCompraProducto);
+                detalleList.setDetalleList(detalleCompraProductos);
+            }
+            return ResponseEntity.ok(detalleList);
+        }else
             return ResponseEntity.notFound().build();
     }
     @GetMapping("/{id}")
@@ -58,6 +75,7 @@ public class DetalleController {
                 DetalleProductos detalleProductos = new DetalleProductos();
                 for (Detalle detalle: productos) {
                     productos1.add(detalle.getProducto());
+                    detalleProductos.setTotal(detalle.getTotal());
                 }
                 detalleProductos.setProductos(productos1);
                 return ResponseEntity.ok(detalleProductos);
@@ -87,15 +105,38 @@ public class DetalleController {
             return ResponseEntity.notFound().build();
     }
     @PostMapping("")
-    public ResponseEntity<Object> createDetalle(@RequestBody Detalle detalle){
-        if (detalle!=null) {
-            //guardarDetalle
-            detalleService.saveDetalle(detalle);
-            return Utilidades.generarResponse(HttpStatus.ACCEPTED, "Compra creada con exitó");
+    public ResponseEntity<Object> createDetalle(@RequestBody List<Detalle> compras){
+        Detalle detalleCalcular = new Detalle();
+        List<Detalle> detalleTemporal = new ArrayList<>();
+        if (!compras.isEmpty()) {
+            //**** guardarCompras ***
+            //recuperando el precio del producto para asignarlo al campo precio de la compra y poder calcular el total
+            double precio;
+            for (Detalle producto: compras) {
+                precio = producto.getProducto().getPrecio();
+                producto.setPrecio(precio);
+                detalleTemporal.add(producto);
+            }
+           double totalCompra = detalleCalcular.calcularCompra(compras);
+           log.info("total de la compra: "+totalCompra);
+            detalleTemporal.forEach(compra->{
+                compra.setTotal(totalCompra);
+                detalleService.saveDetalle(compra);
+            });
+            return Utilidades.generarResponse(HttpStatus.ACCEPTED, "Compra realizada con exitó");
         }else{
-            return Utilidades.generarResponse(HttpStatus.BAD_REQUEST, "Compra no creada, intente mas tárde.");
+            return Utilidades.generarResponse(HttpStatus.BAD_REQUEST, "Compra no realizada, intente mas tárde.");
         }
     }
+    @PostMapping("/calcular/{total}/{recibido}")
+    public ResponseEntity calcularCambio(@PathVariable("total") double total,@PathVariable("recibido") double cantidadRecibida){
+        if (total!= 0 && cantidadRecibida != 0) {
+            double cambio = cantidadRecibida - total;
+            return  ResponseEntity.ok(cambio);
+        }else
+            return ResponseEntity.notFound().build();
+    }
+
     /*@DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteCompra(@PathVariable("id") String id){
         Optional<Compra> compra = detalleService.findCompraById(id);

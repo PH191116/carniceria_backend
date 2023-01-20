@@ -33,29 +33,30 @@ public class CarniceriaApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        List<Detalle> detalleList = new ArrayList<>();
-        //Agregando el primer detalle
-        Optional<Producto> productoOp= productoService.findProductoById("PRD6301");
-        Producto producto1 = productoOp.get();
-        Detalle detalle1 = new Detalle();
-        detalle1.setProducto(producto1);
-        Optional<Compra> compraOp= compraService.findCompraById("CM15009");
-        Compra compra1 = compraOp.get();
-        detalle1.setCompra(compra1);
-        detalle1.setCantidad(2);
-        detalle1.setPrecio(producto1.getPrecio());
-        Detalle detalle2 = new Detalle();
-        Optional<Producto> productoOpDos= productoService.findProductoById("PRD6302");
-        Producto producto2 = productoOpDos.get();
-        detalle2.setProducto(producto2);
-        detalle2.setCompra(compra1);
-        detalle2.setCantidad(3);
-        detalle2.setPrecio(producto2.getPrecio());
-        detalleList.add(detalle1);
-        detalleList.add(detalle2);
+//        List<Detalle> detalleList = new ArrayList<>();
+//        //Agregando el primer detalle
+//        Optional<Producto> productoOp= productoService.findProductoById("PRD6301");
+//        Producto producto1 = productoOp.get();
+//        Detalle detalle1 = new Detalle();
+//        detalle1.setProducto(producto1);
+//        Optional<Compra> compraOp= compraService.findCompraById("CM15009");
+//        Compra compra1 = compraOp.get();
+//        detalle1.setCompra(compra1);
+//        detalle1.setCantidad(2);
+//        detalle1.setPrecio(producto1.getPrecio());
+//        Detalle detalle2 = new Detalle();
+//        Optional<Producto> productoOpDos= productoService.findProductoById("PRD6302");
+//        Producto producto2 = productoOpDos.get();
+//        detalle2.setProducto(producto2);
+//        detalle2.setCompra(compra1);
+//        detalle2.setCantidad(3);
+//        detalle2.setPrecio(producto2.getPrecio());
+//        detalleList.add(detalle1);
+//        detalleList.add(detalle2);
+//        double total = detalle1.calcularCompra(detalleList);
+//        detalle2.setTotal(total);
 //        detalleService.saveDetalle(detalle1);
 //        detalleService.saveDetalle(detalle2);
-       double total = detalle1.calcularCompra(detalleList);
-        System.out.println(total);
+//        System.out.println(total);
     }
 }

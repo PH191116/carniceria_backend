@@ -1,6 +1,5 @@
 package com.example.carniceria.Dto;
 
-import com.example.carniceria.model.Producto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,15 +12,13 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DetalleProductos {
-    private List<Producto> productos = new ArrayList<>();
-    double total;
+public class DetalleList {
+    List<DetalleCompraProductos> detalleList = new ArrayList<>();
 
     @Override
     public String toString() {
-        return "DetalleProductos{" +
-                "productos=" + productos +
-                ", total=" + total +
+        return "DetalleList{" +
+                "detalleList=" + detalleList +
                 '}';
     }
 }

@@ -25,6 +25,7 @@ public class Detalle {
     Producto producto;
     private int cantidad;
     private double precio;
+    private double total;
 
     public double calcularCompra(List<Detalle> detalleList){
         double total=0.00, precio = 0.00;
