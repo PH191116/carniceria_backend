@@ -21,8 +21,8 @@ public class DetalleCompraProductos {
 
     @Override
     public String toString() {
-        return "DetalleCompraProducto{" +
-                "compra=" + compra +
+        return "DetalleCompraProductos{" +
+                ", compra=" + compra +
                 ", productos=" + productos +
                 ", total=" + total +
                 '}';

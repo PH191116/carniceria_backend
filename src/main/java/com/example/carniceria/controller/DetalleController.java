@@ -2,7 +2,6 @@ package com.example.carniceria.controller;
 
 import com.example.carniceria.Dto.DetalleCompraProductos;
 import com.example.carniceria.Dto.DetalleCompras;
-import com.example.carniceria.Dto.DetalleList;
 import com.example.carniceria.Dto.DetalleProductos;
 import com.example.carniceria.model.Compra;
 import com.example.carniceria.model.Detalle;
@@ -34,24 +33,39 @@ public class DetalleController {
     List<Detalle> detalleList= new ArrayList<>();
     @GetMapping("")
     public ResponseEntity<Object> getDetalle(){
-        List<Detalle> detalle = detalleService.findAllDetalle();
-        DetalleCompraProductos detalleCompraProducto = new DetalleCompraProductos();
-        DetalleList detalleList = new DetalleList();
-        List<Compra> compras = new ArrayList<>();
-        List<Producto> productos = new ArrayList<>();
+//        List<Detalle> detalle = detalleService.findAllDetalle();
         List<DetalleCompraProductos> detalleCompraProductos = new ArrayList<>();
+        List<Compra> compras = compraService.findAllCompras();
+        log.info("detalle: "+compras);
+        if (!compras.isEmpty()) {
+            for (Compra compra: compras) {
+                List<Producto> productos = new ArrayList<>();
+                DetalleCompraProductos detalleCompraProducto = new DetalleCompraProductos();
+                List<Detalle> productosList = detalleService.findDetalleByCompra(compra);
+                log.info("findDetalleByCompra: "+productosList);
+                if (!productosList.isEmpty()){
+                    for (Detalle products: productosList) {
+                        detalleCompraProducto.setCompra(compra);
+                        log.info("Compra con productos insert: "+detalleCompraProducto.getCompra());
+                        productos.add(products.getProducto());
+                        detalleCompraProducto.setTotal(products.getTotal());
+                    }
+                    log.info("productos agregados: "+productos);
+                    detalleCompraProducto.setProductos(productos);
+                    detalleCompraProductos.add(detalleCompraProducto);
+                }
+            }
+            log.info("Lista detalleCompraProductos: "+detalleCompraProductos);
+            return ResponseEntity.ok(detalleCompraProductos);
+            }else
+                return ResponseEntity.notFound().build();
+    }
+    @GetMapping("/todos")
+    public ResponseEntity<Object> getDetalles(){
+        List<Detalle> detalle = detalleService.findAllDetalle();
         log.info("detalle: "+detalle);
         if (!detalle.isEmpty()) {
-            for (Detalle detalle1 : detalle) {
-                Optional<Compra> compra = compraService.findCompraById(detalle1.getCompra().getId_compra());
-                detalleCompraProducto.setCompra(compra.get());
-                productos.add(detalle1.getProducto());
-                detalleCompraProducto.setProductos(productos);
-                detalleCompraProducto.setTotal(detalle1.getTotal());
-                detalleCompraProductos.add(detalleCompraProducto);
-                detalleList.setDetalleList(detalleCompraProductos);
-            }
-            return ResponseEntity.ok(detalleList);
+            return ResponseEntity.ok(detalle);
         }else
             return ResponseEntity.notFound().build();
     }
