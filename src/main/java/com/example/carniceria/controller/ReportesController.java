@@ -37,11 +37,6 @@ public class ReportesController {
         String valor  = "attachment; filename=Compras_"+fechaActual+".pdf";
         response.setHeader(cabecera, valor);
         List<Detalle> detalle = detalleService.findAllDetalle();
-//        DetalleCompraProductos detalleCompraProducto = new DetalleCompraProductos();
-//        DetalleList detalleList = new DetalleList();
-//        List<Compra> compras = new ArrayList<>();
-//        List<Producto> productos = new ArrayList<>();
-//        List<DetalleCompraProductos> detalleCompraProductos = new ArrayList<>();
         log.info("detalle: "+detalle);
         if (!detalle.isEmpty()) {
             ComprasPdf comprasPdf = new ComprasPdf(detalle);

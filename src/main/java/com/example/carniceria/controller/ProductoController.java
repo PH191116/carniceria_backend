@@ -21,11 +21,13 @@ public class ProductoController {
     @Autowired
     IProductoService productoService;
     @GetMapping("")
-    public List<Producto> getProductos(){
-        if (!productoService.findAllProductos().isEmpty())
-            return productoService.findAllProductos();
+    public ResponseEntity getProductos(){
+        if (!productoService.findAllProductos().isEmpty()) {
+            List<Producto> productos = productoService.findAllProductos();
+            return ResponseEntity.ok(productos);
+        }
         else
-            return Arrays.asList();
+            return Utilidades.generarResponse(HttpStatus.BAD_REQUEST, "No se pudieron obtener datos, intente más tarde");
     }
     @GetMapping("/{id}")
     public ResponseEntity getProductoById(@PathVariable("id") String id){
@@ -33,7 +35,8 @@ public class ProductoController {
         if (producto.isPresent())
             return ResponseEntity.ok(producto.get());
         else
-            return ResponseEntity.notFound().build();
+            return Utilidades.generarResponse(HttpStatus.BAD_REQUEST, "No se pudieron obtener datos, intente más tarde");
+
     }
     @PostMapping("")
     public ResponseEntity<Object> createProducto(@RequestBody Producto producto){
@@ -54,10 +57,11 @@ public class ProductoController {
                     log.info("Existe codigo prod: "+productoService.existeProductoById(codigo));
                 }while (productoService.existeProductoById(codigo));
                 producto.setId_producto(codigo);
+                producto.setNombre(producto.getNombre().toUpperCase());
                 productoService.saveProducto(producto);
                 return Utilidades.generarResponse(HttpStatus.ACCEPTED, "Producto creado con exitó");
         }else{
-            return Utilidades.generarResponse(HttpStatus.BAD_REQUEST, "Producto no creado, intente mas tárde.");
+            return Utilidades.generarResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Producto no creado, intente mas tárde.");
         }
     }
 
@@ -85,6 +89,6 @@ public class ProductoController {
             productoService.deleteProductoById(id);
             return Utilidades.generarResponse(HttpStatus.OK, "Producto eliminado con éxito");
         }else
-            return Utilidades.generarResponse(HttpStatus.BAD_REQUEST, "Producto no eliminado, intente más tarde");
+            return Utilidades.generarResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Producto no eliminado, intente más tarde");
     }
 }

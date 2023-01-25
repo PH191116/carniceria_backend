@@ -58,7 +58,7 @@ public class DetalleController {
             log.info("Lista detalleCompraProductos: "+detalleCompraProductos);
             return ResponseEntity.ok(detalleCompraProductos);
             }else
-                return ResponseEntity.notFound().build();
+            return Utilidades.generarResponse(HttpStatus.BAD_REQUEST, "No se pudieron obtener datos, intente más tarde");
     }
     @GetMapping("/todos")
     public ResponseEntity<Object> getDetalles(){
@@ -67,7 +67,7 @@ public class DetalleController {
         if (!detalle.isEmpty()) {
             return ResponseEntity.ok(detalle);
         }else
-            return ResponseEntity.notFound().build();
+            return Utilidades.generarResponse(HttpStatus.BAD_REQUEST, "No se pudieron obtener datos, intente más tarde");
     }
     @GetMapping("/{id}")
     public ResponseEntity getDetalleById(@PathVariable("id") Integer id){
@@ -75,7 +75,7 @@ public class DetalleController {
         if (detalle.isPresent())
             return ResponseEntity.ok(detalle.get());
         else
-            return ResponseEntity.notFound().build();
+            return Utilidades.generarResponse(HttpStatus.BAD_REQUEST, "No se pudieron obtener datos, intente más tarde");
     }
     //Obtener los productos de una compra en especifico
     @GetMapping("compra/{id}/productos")
@@ -94,9 +94,9 @@ public class DetalleController {
                 detalleProductos.setProductos(productos1);
                 return ResponseEntity.ok(detalleProductos);
             }else
-                return ResponseEntity.notFound().build();
+                return Utilidades.generarResponse(HttpStatus.BAD_REQUEST, "No se pudieron obtener datos, intente más tarde");
         }else
-            return ResponseEntity.notFound().build();
+            return Utilidades.generarResponse(HttpStatus.BAD_REQUEST, "No se pudieron obtener datos, intente más tarde");
     }
     //Obtener los compras de un producto en especifico
     @GetMapping("producto/{id}/compras")
@@ -114,9 +114,9 @@ public class DetalleController {
                 detalleCompras.setCompras(compras1);
                 return ResponseEntity.ok(detalleCompras);
             }else
-                return ResponseEntity.notFound().build();
+                return Utilidades.generarResponse(HttpStatus.BAD_REQUEST, "No se pudieron obtener datos, intente más tarde");
         }else
-            return ResponseEntity.notFound().build();
+            return Utilidades.generarResponse(HttpStatus.BAD_REQUEST, "No se pudieron obtener datos, intente más tarde");
     }
     @PostMapping("")
     public ResponseEntity<Object> createDetalle(@RequestBody List<Detalle> compras){
@@ -139,7 +139,7 @@ public class DetalleController {
             });
             return Utilidades.generarResponse(HttpStatus.ACCEPTED, "Compra realizada con exitó");
         }else{
-            return Utilidades.generarResponse(HttpStatus.BAD_REQUEST, "Compra no realizada, intente mas tárde.");
+            return Utilidades.generarResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Compra no realizada, intente mas tárde.");
         }
     }
     @PostMapping("/calcular/{total}/{recibido}")
@@ -148,7 +148,7 @@ public class DetalleController {
             double cambio = cantidadRecibida - total;
             return  ResponseEntity.ok(cambio);
         }else
-            return ResponseEntity.notFound().build();
+            return Utilidades.generarResponse(HttpStatus.BAD_REQUEST, "No se pudo calcular la devolucion, intente más tarde");
     }
 
     /*@DeleteMapping("/{id}")

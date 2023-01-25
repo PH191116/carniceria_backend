@@ -1,10 +1,8 @@
 package com.example.carniceria.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.beans.factory.annotation.Value;
 import java.util.List;
 
 @Entity
@@ -29,10 +27,21 @@ public class Detalle {
 
     public double calcularCompra(List<Detalle> detalleList){
         double total=0.00, precio = 0.00;
-        int cantidad;
+
+        int cantidad, cantidadChorizoTusa = 7, cantidadChorizoEspecial =3;
         for (Detalle detalle:detalleList) {
             cantidad = detalle.getCantidad();
             precio = detalle.getPrecio();
+           String producto = detalle.getProducto().getNombre();
+            if (producto.equals("CHORIZOS DE TUSA") || producto.equals("CHORIZO DE TUSA")){
+                double chorizoTusa = (detalle.cantidad/cantidadChorizoTusa)*precio;
+                total += chorizoTusa;
+                continue;
+            } else if (producto.equals("CHORIZOS ESPECIAL") || producto.equals("CHORIZO ESPECIAL")) {
+                double chorizoEspecial = (detalle.cantidad/cantidadChorizoEspecial)*precio;
+                total+= chorizoEspecial;
+                continue;
+            }
             total += (cantidad*precio);
         }
         return total;
