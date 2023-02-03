@@ -55,6 +55,7 @@ public class ComprasPdf {
         //fecha recibida desde la base
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         int count = 1;
+        double total = 0.00;
         for (Detalle detalle: comprasList) {
             table.addCell(String.valueOf(count++));
             table.addCell(detalle.getCompra().getId_compra());
@@ -66,6 +67,16 @@ public class ComprasPdf {
             table.addCell(String.valueOf(detalle.getProducto().getPrecio()));
             table.addCell(String.valueOf(detalle.getCantidad()));
             table.addCell(String.valueOf(detalle.getTotal()));
+            total += detalle.getTotal();
+            if (comprasList.lastIndexOf(detalle)+1 == comprasList.size()){
+                table.addCell("");
+                table.addCell("");
+                table.addCell("");
+                table.addCell("");
+                table.addCell("");
+                table.addCell("");
+                table.addCell(String.valueOf(total));
+            }
         }
     }
     // METODO PARA EXPORTAR PDF

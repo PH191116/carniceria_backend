@@ -5,9 +5,11 @@ import com.example.carniceria.model.Detalle;
 import com.example.carniceria.model.Producto;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Date;
 import java.util.List;
 
 public interface DetalleRepository extends JpaRepository<Detalle, Integer> {
     List<Detalle> findDetalleByCompra(Compra compra);
     List<Detalle> findDetalleByProducto(Producto producto);
+    List<Detalle> findDetalleByCompra_Fecha(Date fecha);
 }

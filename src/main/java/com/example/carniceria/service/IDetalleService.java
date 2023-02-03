@@ -4,6 +4,7 @@ import com.example.carniceria.model.Compra;
 import com.example.carniceria.model.Detalle;
 import com.example.carniceria.model.Producto;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,4 +14,5 @@ public interface IDetalleService {
     Optional<Detalle> findDetalleById(Integer id);
     List<Detalle> findDetalleByCompra(Compra compra);
     List<Detalle> findDetalleByProducto(Producto producto);
+    List<Detalle> findDetalleByCompraFecha(Date fecha);
 }

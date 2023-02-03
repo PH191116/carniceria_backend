@@ -16,9 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -64,6 +64,26 @@ public class DetalleController {
     public ResponseEntity<Object> getDetalles(){
         List<Detalle> detalle = detalleService.findAllDetalle();
         log.info("detalle: "+detalle);
+        if (!detalle.isEmpty()) {
+            return ResponseEntity.ok(detalle);
+        }else
+            return Utilidades.generarResponse(HttpStatus.BAD_REQUEST, "No se pudieron obtener datos, intente más tarde");
+    }
+    @GetMapping("/compra/fecha")
+    public ResponseEntity<Object> getDetallesCompraByFecha() throws ParseException {
+        //formato de fecha recibida por el objeto Date
+        SimpleDateFormat format = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy",
+                Locale.ENGLISH);
+        //Recibiendo fecha del objeto Date
+        Date date = format.parse(new Date().toString());
+        //Convertir fecha del objeto Date al formato deseado
+        String formatFecha = new SimpleDateFormat("yyyy-MM-dd").format(date);
+        //formato de fecha recibida de la conversion anterior
+        SimpleDateFormat format2 = new SimpleDateFormat("yyyy-MM-dd");
+        //Convertir la fecha recibida en el formate deseado
+        Date finalDate = format2.parse(formatFecha);
+        List<Detalle> detalle = detalleService.findDetalleByCompraFecha(finalDate);
+        log.info("detalle: "+detalle+"date: "+finalDate);
         if (!detalle.isEmpty()) {
             return ResponseEntity.ok(detalle);
         }else
@@ -125,18 +145,19 @@ public class DetalleController {
         if (!compras.isEmpty()) {
             //**** guardarCompras ***
             //recuperando el precio del producto para asignarlo al campo precio de la compra y poder calcular el total
-            double precio;
-            for (Detalle producto: compras) {
-                precio = producto.getProducto().getPrecio();
-                producto.setPrecio(precio);
-                detalleTemporal.add(producto);
-            }
-           double totalCompra = detalleCalcular.calcularCompra(compras);
-           log.info("total de la compra: "+totalCompra);
-            detalleTemporal.forEach(compra->{
+            double precio, totalCompra = 0.00;
+            for (Detalle compra: compras) {
+                precio = compra.getProducto().getPrecio();
+                compra.setPrecio(precio);
+                detalleTemporal.add(compra);
+                totalCompra = detalleCalcular.calcularCompra(compra);
+                log.info("total de la compra: "+totalCompra);
                 compra.setTotal(totalCompra);
                 detalleService.saveDetalle(compra);
-            });
+            }
+//            detalleTemporal.forEach(compra->{
+//                compra.setTotal(totalCompra);
+//            });
             return Utilidades.generarResponse(HttpStatus.ACCEPTED, "Compra realizada con exitó");
         }else{
             return Utilidades.generarResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Compra no realizada, intente mas tárde.");
