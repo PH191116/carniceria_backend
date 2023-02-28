@@ -12,12 +12,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Slf4j
 @RestController
+@CrossOrigin("http://localhost:4200")
 @RequestMapping("/compras")
 public class CompraController {
     @Autowired
@@ -40,9 +41,21 @@ public class CompraController {
             return ResponseEntity.notFound().build();
     }
     @PostMapping("")
-    public ResponseEntity<Object> createCompra(@RequestBody Compra compra){
+    public ResponseEntity<Object> createCompra(@RequestBody Compra compra) throws ParseException {
         String codigo="";
         if (compra!=null) {
+            //formato de fecha recibida por el objeto Date
+            SimpleDateFormat format = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy",
+                    Locale.ENGLISH);
+            //Recibiendo fecha del objeto Date
+            Date date = format.parse(new Date().toString());
+            //Convertir fecha del objeto Date al formato deseado
+            String formatFecha = new SimpleDateFormat("yyyy-MM-dd").format(date);
+            //formato de fecha recibida de la conversion anterior
+            SimpleDateFormat format2 = new SimpleDateFormat("yyyy-MM-dd");
+            //Convertir la fecha recibida en el formate deseado
+            Date finalDate = format2.parse(formatFecha);
+
             //crear un id aleatorio, si id existe se genera uno nuevo
             do {
                 int aleatorio = (int) (Math.random()*(99999-1)) + 1;
@@ -58,8 +71,9 @@ public class CompraController {
                 log.info("Existe codigo compra: "+compraService.existeCompraById(codigo));
             }while (compraService.existeCompraById(codigo));
             compra.setId_compra(codigo);
+            compra.setFecha(finalDate);
             compraService.insertCompra(compra);
-            return Utilidades.generarResponse(HttpStatus.ACCEPTED, "Exitó");
+            return ResponseEntity.ok(compra);
         }else{
             return Utilidades.generarResponse(HttpStatus.BAD_REQUEST, "Intente mas tárde.");
         }

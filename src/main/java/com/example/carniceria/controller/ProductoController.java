@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
+@CrossOrigin("http://localhost:4200")
 @RequestMapping("/productos")
 public class ProductoController {
     @Autowired

@@ -2,6 +2,8 @@ package com.example.carniceria.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -12,7 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 public class Detalle {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id_detalle;
     @ManyToOne
     @JoinColumn(name = "id_compra")
@@ -20,13 +21,13 @@ public class Detalle {
     @ManyToOne
     @JoinColumn(name = "id_producto")
     Producto producto;
-    private int cantidad;
+    private double cantidad;
     private double precio;
-    private double total;
+    private BigDecimal total;
 
     public double calcularCompra(Detalle detalle){
-        double total=0.00, precio = 0.00;
-        int cantidad, cantidadChorizoTusa = 7, cantidadChorizoEspecial =3;
+        double total=0.00, precio = 0.00, cantidad;
+        int  cantidadChorizoTusa = 7, cantidadChorizoEspecial =3;
 
             cantidad = detalle.getCantidad();
             precio = detalle.getPrecio();

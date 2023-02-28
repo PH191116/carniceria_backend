@@ -1,8 +1,6 @@
 package com.example.carniceria.controller;
 
-import com.example.carniceria.Dto.DetalleCompraProductos;
-import com.example.carniceria.Dto.DetalleCompras;
-import com.example.carniceria.Dto.DetalleProductos;
+import com.example.carniceria.Dto.*;
 import com.example.carniceria.model.Compra;
 import com.example.carniceria.model.Detalle;
 import com.example.carniceria.model.Producto;
@@ -16,12 +14,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Slf4j
 @RestController
+@CrossOrigin("http://localhost:4200")
 @RequestMapping("/detalle")
 public class DetalleController {
     @Autowired
@@ -31,35 +32,6 @@ public class DetalleController {
     @Autowired
     IProductoService productoService;
     List<Detalle> detalleList= new ArrayList<>();
-    @GetMapping("")
-    public ResponseEntity<Object> getDetalle(){
-//        List<Detalle> detalle = detalleService.findAllDetalle();
-        List<DetalleCompraProductos> detalleCompraProductos = new ArrayList<>();
-        List<Compra> compras = compraService.findAllCompras();
-        log.info("detalle: "+compras);
-        if (!compras.isEmpty()) {
-            for (Compra compra: compras) {
-                List<Producto> productos = new ArrayList<>();
-                DetalleCompraProductos detalleCompraProducto = new DetalleCompraProductos();
-                List<Detalle> productosList = detalleService.findDetalleByCompra(compra);
-                log.info("findDetalleByCompra: "+productosList);
-                if (!productosList.isEmpty()){
-                    for (Detalle products: productosList) {
-                        detalleCompraProducto.setCompra(compra);
-                        log.info("Compra con productos insert: "+detalleCompraProducto.getCompra());
-                        productos.add(products.getProducto());
-                        detalleCompraProducto.setTotal(products.getTotal());
-                    }
-                    log.info("productos agregados: "+productos);
-                    detalleCompraProducto.setProductos(productos);
-                    detalleCompraProductos.add(detalleCompraProducto);
-                }
-            }
-            log.info("Lista detalleCompraProductos: "+detalleCompraProductos);
-            return ResponseEntity.ok(detalleCompraProductos);
-            }else
-            return Utilidades.generarResponse(HttpStatus.BAD_REQUEST, "No se pudieron obtener datos, intente más tarde");
-    }
     @GetMapping("/todos")
     public ResponseEntity<Object> getDetalles(){
         List<Detalle> detalle = detalleService.findAllDetalle();
@@ -139,31 +111,45 @@ public class DetalleController {
             return Utilidades.generarResponse(HttpStatus.BAD_REQUEST, "No se pudieron obtener datos, intente más tarde");
     }
     @PostMapping("")
-    public ResponseEntity<Object> createDetalle(@RequestBody List<Detalle> compras){
+    public ResponseEntity<Object> createDetalle(@RequestBody DetalleRequest compraRequest){
         Detalle detalleCalcular = new Detalle();
-        List<Detalle> detalleTemporal = new ArrayList<>();
-        if (!compras.isEmpty()) {
+        Detalle detalle = new Detalle();
+        int ultimoId = 0;
+        if (compraRequest!=null) {
             //**** guardarCompras ***
-            //recuperando el precio del producto para asignarlo al campo precio de la compra y poder calcular el total
             double precio, totalCompra = 0.00;
-            for (Detalle compra: compras) {
-                precio = compra.getProducto().getPrecio();
-                compra.setPrecio(precio);
-                detalleTemporal.add(compra);
-                totalCompra = detalleCalcular.calcularCompra(compra);
-                log.info("total de la compra: "+totalCompra);
-                compra.setTotal(totalCompra);
-                detalleService.saveDetalle(compra);
+            log.info("Insertando compra....");
+            List<Detalle> detalles = detalleService.findAllDetalle();
+            for (Detalle detalle1: detalles) {
+                ultimoId = detalle1.getId_detalle();
             }
-//            detalleTemporal.forEach(compra->{
-//                compra.setTotal(totalCompra);
-//            });
+            log.info("Obteniendo objeto de peticion.... "+compraRequest);
+            for (ProductoDto productoDto: compraRequest.getProductos()) {
+                detalle.setCompra(compraRequest.getCompra());
+                Optional<Producto> productoOptional = productoService.findProductoById(productoDto.getId_producto());
+                detalle.setCantidad(productoDto.getCantidad());
+                detalle.setPrecio(productoOptional.get().getPrecio());
+                detalle.setProducto(productoOptional.get());
+                totalCompra = detalleCalcular.calcularCompra(detalle);
+                log.info("total de la compra... "+redondearDecimales(totalCompra,2));
+                detalle.setTotal(redondearDecimales(totalCompra,2).setScale(2, RoundingMode.HALF_UP));
+                //detalleTemporal.add(detalle);
+                if (detalle.getId_detalle()==null){
+                    log.info("Entra a IF");
+                    detalle.setId_detalle(ultimoId+1);
+                    detalleService.saveDetalle(detalle);
+                }else {
+                    detalle.setId_detalle(detalle.getId_detalle()+1);
+                    detalleService.saveDetalle(detalle);
+                }
+            }
+            log.info("Insertando compra... OK");
             return Utilidades.generarResponse(HttpStatus.ACCEPTED, "Compra realizada con exitó");
         }else{
             return Utilidades.generarResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Compra no realizada, intente mas tárde.");
         }
     }
-    @PostMapping("/calcular/{total}/{recibido}")
+    @GetMapping("/calcular/{total}/{recibido}")
     public ResponseEntity calcularCambio(@PathVariable("total") double total,@PathVariable("recibido") double cantidadRecibida){
         if (total!= 0 && cantidadRecibida != 0) {
             double cambio = cantidadRecibida - total;
@@ -171,14 +157,13 @@ public class DetalleController {
         }else
             return Utilidades.generarResponse(HttpStatus.BAD_REQUEST, "No se pudo calcular la devolucion, intente más tarde");
     }
-
-    /*@DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteCompra(@PathVariable("id") String id){
-        Optional<Compra> compra = detalleService.findCompraById(id);
-        if (compra.isPresent()){
-            detalleService.deleteCompraById(id);
-            return Utilidades.generarResponse(HttpStatus.OK, "Compra eliminada con éxito");
-        }else
-            return Utilidades.generarResponse(HttpStatus.BAD_REQUEST, "Compra no eliminada, intente más tarde");
-    }*/
+    public BigDecimal redondearDecimales(double valorInicial, int numeroDecimales) {
+        double parteEntera, resultado;
+        resultado = valorInicial;
+        parteEntera = Math.floor(resultado);
+        resultado=(resultado-parteEntera)*Math.pow(10, numeroDecimales);
+        resultado=Math.round(resultado);
+        resultado=(resultado/Math.pow(10, numeroDecimales))+parteEntera;
+        return BigDecimal.valueOf(resultado).setScale(2, RoundingMode.HALF_UP);
+    }
 }

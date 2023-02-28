@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.awt.*;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -46,7 +48,7 @@ public class ComprasPdf {
         celda.setPhrase(new Phrase("cantidad", fuente));
         table.addCell(celda);
 
-        celda.setPhrase(new Phrase("total compra", fuente));
+        celda.setPhrase(new Phrase("total", fuente));
         table.addCell(celda);
 
     }
@@ -67,7 +69,7 @@ public class ComprasPdf {
             table.addCell(String.valueOf(detalle.getProducto().getPrecio()));
             table.addCell(String.valueOf(detalle.getCantidad()));
             table.addCell(String.valueOf(detalle.getTotal()));
-            total += detalle.getTotal();
+            total += detalle.getTotal().doubleValue();
             if (comprasList.lastIndexOf(detalle)+1 == comprasList.size()){
                 table.addCell("");
                 table.addCell("");
@@ -75,7 +77,7 @@ public class ComprasPdf {
                 table.addCell("");
                 table.addCell("");
                 table.addCell("");
-                table.addCell(String.valueOf(total));
+                table.addCell(String.valueOf(redondearDecimales(total, 2)));
             }
         }
     }
@@ -105,5 +107,14 @@ public class ComprasPdf {
 
         document.add(table);
         document.close();
+    }
+    public BigDecimal redondearDecimales(double valorInicial, int numeroDecimales) {
+        double parteEntera, resultado;
+        resultado = valorInicial;
+        parteEntera = Math.floor(resultado);
+        resultado=(resultado-parteEntera)*Math.pow(10, numeroDecimales);
+        resultado=Math.round(resultado);
+        resultado=(resultado/Math.pow(10, numeroDecimales))+parteEntera;
+        return BigDecimal.valueOf(resultado).setScale(2, RoundingMode.HALF_UP);
     }
 }

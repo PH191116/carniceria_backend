@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class DetalleProductos {
     private List<Producto> productos = new ArrayList<>();
-    double total;
+    BigDecimal total;
 
     @Override
     public String toString() {
