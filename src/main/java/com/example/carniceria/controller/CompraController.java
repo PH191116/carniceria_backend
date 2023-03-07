@@ -1,9 +1,6 @@
 package com.example.carniceria.controller;
 
-import com.example.carniceria.model.Categoria;
 import com.example.carniceria.model.Compra;
-import com.example.carniceria.model.Producto;
-import com.example.carniceria.service.ICategoriaService;
 import com.example.carniceria.service.ICompraService;
 import com.example.carniceria.util.Utilidades;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +15,6 @@ import java.util.*;
 
 @Slf4j
 @RestController
-@CrossOrigin("http://localhost:4200")
 @RequestMapping("/compras")
 public class CompraController {
     @Autowired

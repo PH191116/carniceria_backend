@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Slf4j
-@CrossOrigin("http://localhost:4200")
 @Controller
 @RequestMapping("/reportes")
 public class ReportesController {

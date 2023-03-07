@@ -22,7 +22,7 @@ import java.util.*;
 
 @Slf4j
 @RestController
-@CrossOrigin("http://localhost:4200")
+//@CrossOrigin("http://localhost:4200")
 @RequestMapping("/detalle")
 public class DetalleController {
     @Autowired

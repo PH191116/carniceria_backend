@@ -16,7 +16,6 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
-@CrossOrigin("http://localhost:4200")
 @RequestMapping("/productos")
 public class ProductoController {
     @Autowired
@@ -66,6 +65,7 @@ public class ProductoController {
         }
     }
 
+    @CrossOrigin("http://localhost:4200")
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateProducto(@PathVariable("id") String id, @RequestBody Producto producto){
         if (producto != null){

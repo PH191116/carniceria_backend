@@ -18,7 +18,6 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
-@CrossOrigin("http://localhost:4200")
 @RequestMapping("/categorias")
 public class CategoriaController {
     @Autowired
